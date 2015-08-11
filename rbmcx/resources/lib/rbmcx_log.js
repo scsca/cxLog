@@ -34,7 +34,7 @@ function createEdges(e) {
         return;
     for (var i in e.ActionBuffer) {
         var a = e.ActionBuffer[i];
-        if (a.target == e.ID) {
+        if (a.target == e.ID || a.log == "1A") {
 
         } else {
             cx.drawEdge(e.ID, a);

@@ -1,4 +1,6 @@
 function cxNode(e, g) {
+    if (e == null)
+        return false;
     this.id = e.ID;
     this.name = e.Name;
     this.encdps = e.DPS;
@@ -66,11 +68,11 @@ function cxEdge(s, a, g) {
 
     this.timeout = function () {
         this.group.transition()
-        .delay(2000)
+        .delay(1200)
         .style("opacity", 0)
-        .duration(500)
+        .duration(300)
         .remove();
-        this.label.transition().delay(2000).remove();
+        this.label.transition().delay(1500).remove();
     };
 
     this.draw();
@@ -187,25 +189,67 @@ function cxGraph(container, w, h) {
 
     this.labelFix = function () {
         var svg = this.svg;
-        svg.selectAll("text").each(function (d, i) {
-            var that = this;
-            if (d3.select(this).attr("type") == "node")
-                return;
-            a = this.getBoundingClientRect();
+        while (this.collisions("text", "node")) {
             svg.selectAll("text").each(function (d, i) {
-                if (this != that) {
-                    b = this.getBoundingClientRect();
-                    if ((Math.abs(a.left - b.left) * 2 < (a.width + b.width)) &&
-                       (Math.abs(a.top - b.top) * 2 < (a.height + b.height))) {
-                        d3.select(this).attr("transform", "translate(0,-30)");
+                if (d3.select(this).attr("type") == "node")
+                    return;
+                var that = this;
+                svg.selectAll("text").each(function (d, i) {
+                    if (this != that) {
+                        if (collide(this, that)) {
+                            var a = d3.select(that);
+                            var b = d3.select(this);
+                            if (a.attr("x") == b.attr("x") && a.attr("y") == b.attr("y")) {
+                                a.attr("y", parseFloat(a.attr("y")) - this.getBoundingClientRect().height);
+                            } else {
+                                var ar = that.getBoundingClientRect();
+                                var br = this.getBoundingClientRect();
+                                dx = Math.min(Math.abs(ar.left - br.right), Math.abs(ar.right - br.left));
+
+                                if (ar.left > br.left) {
+                                    a.attr("x", parseFloat(a.attr("x")) + dx);
+                                    b.attr("x", parseFloat(b.attr("x")) - dx);
+                                } else {
+                                    a.attr("x", parseFloat(a.attr("x")) - dx);
+                                    b.attr("x", parseFloat(b.attr("x")) + dx);
+                                }
+
+                                console.log(dx);
+                                //a.attr("x", parseFloat(a.attr("x"))+dx*2);
+                                //b.attr("x", parseFloat(b.attr("x"))-dx);
+                            }
+                        }
                     }
+                });
+            });
+        }
+    };
+
+    this.collisions = function (t, ex) {
+        var svg = this.svg;
+        c = false;
+        svg.selectAll(t).each(function (d, i) {
+            if (d3.select(this).attr("type") == ex)
+                return;
+            var that = this;
+            svg.selectAll(t).each(function (d, i) {
+                if (this != that) {
+                    if (collide(this, that))
+                        c = true;
                 }
             });
         });
-        svg.selectAll("text")
+        return c;
     };
 
     this.ready = true;
+}
+
+function collide(na, nb) {
+    a = na.getBoundingClientRect();
+    b = nb.getBoundingClientRect();
+    return ((Math.abs(a.left - b.left) * 2 < (a.width + b.width)) &&
+            (Math.abs(a.top - b.top) * 2 < (a.height + b.height)));
 }
 
 function createDate(t) {
