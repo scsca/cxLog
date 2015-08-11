@@ -1,0 +1,5 @@
+bin/
+obj/
+
+cxLog.csproj.user
+Newtonsoft.Json.dll

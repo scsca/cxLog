@@ -1,0 +1,378 @@
+﻿<html>
+<head>
+<meta charset="utf-8" />
+<title></title>
+<link rel="stylesheet" type="text/css" href="rbmcx.css">
+<script src="lib/jquery-2.1.1.min.js" type="text/javascript"></script>
+<script src="lib/peity.min.js" type="text/javascript"></script>
+<script>
+//
+//Data is provided as following:
+//
+// var ActXiv = {
+//	"Encounter": {...},
+//	"Combatant": {
+//		"PlayerName1": {...},
+//		"PlayerName2": {...},
+//		...
+//	}
+// };
+//
+// Data gets updated every second.
+//
+// onOverlayDataUpdate event can be received. First argument in the event property.
+//
+
+//
+// Display Settings --
+//
+
+// Encounter header definition:
+var encounterDefine = "<span class='enc' style='font-size: 12px;'>{title}</span> | {CurrentZoneName} | Time: <span class='enc'>{duration}</span>&nbsp;Total DPS: <span class='enc'>{dps}</span>";
+// 
+var useHTMLEncounterDefine = true;
+var max = 1;
+// Table header definition:
+var headerDefine =
+[
+	{ text: "Job", width: "1em", align: "center" },
+	{ text: "Name", width: "6em", align: "center" },
+	{ text: "DPS", width: "3em", align: "center" },
+	{ text: "", width: "1em", align: "center" },
+	{ text: "Crit", width: "2em", align: "center" },
+	{ text: "HPS", width: "3em", align: "center" },
+	{ text: "Miss", width: "1.5em", align: "center" },
+];
+
+// Table body definition:
+var bodyDefine =
+[
+	{ html: "<img src='./images/glow/{JobOrName}.png' style='width=60%;height:60%;' />", align: "center", effect: dpsBarEffect },
+	{ text: "{name}", width: "", align: "center",effect: myCharacterEffect },
+	{ text: "{encdps}", width: "", align: "center" },
+	{ html: "<span class='perfLine'>{Last60DPS},{Last30DPS},{Last10DPS}</span>", width: "", align: "center" },
+	{ text: "{crithit%}", width: "", align: "center" },
+	{ text: "{enchps}", width: "", align: "center" },
+	{ text: "{misses}", width: "", align: "center", effect: redTextEffect },
+];
+
+function myCharacterEffect(cell, combatant, index) {
+	var myname = "YOU";
+	if (myname == combatant["name"]) {
+		$(cell).parents("tr").addClass("mc");
+	}
+}
+
+function jobColorEffect(cell, combatant, index) {
+	$(cell).parents("tr").addClass(combatant["Job"]);
+}
+
+function insertCommaEffect(cell) {
+	cell.innerText = cell.innerText.replace( /(\d)(?=(\d\d\d)+(?!\d))/g,'$1,');
+}
+
+function redTextEffect(cell) {
+	var num = parseInt(cell.innerText)
+	if (num > 0) {
+		$(cell).addClass("textred");
+	}
+}
+
+function graphEffect(cell) {
+	$(cell).addClass("graphCell");
+}
+
+
+function dpsBarEffect(cell, combatant, index) {
+	var tank = ["Gla", "Pld", "Mrd", "War", "Drk"]
+	var dps = ["Pgl", "Mnk", "Lnc", "Drg", "Arc", "Brd", "Rog", "Nin", "Acn", "Smn", "Thm", "Blm", "Mch"]
+	var healer = ["Cnj", "Whm", "Sch", "Ast"]
+
+	if (index == 0 || typeof dpsBarEffect.topdeeps == 'undefined') {
+		dpsBarEffect.topdeeps = combatant["encdps"];
+	}
+	var deeps = combatant["encdps"];
+
+	// Color definitions:
+	var job = combatant["Job"];
+	if (dps.indexOf(job) > -1){
+		var color = "rgba(200,3,8,0.3)";
+	} else if (tank.indexOf(job) > -1){
+		var color = "rgba(41,112,243,0.3)";
+	} else if (healer.indexOf(job) > -1){
+		var color = "rgba(107,240,86,0.3)";
+	} else {
+		var color = "rgba(128,0,255,0.3)";
+	}
+
+	var tableRow = cell.parentNode;
+	tableRow.style.background = "-webkit-gradient(linear, left top,right top, color-stop(0.95,"+ color + "), to(rgba(24,24,24,0.0)))";
+	tableRow.style.backgroundSize = (parseInt(deeps) * 100 / parseInt(dpsBarEffect.topdeeps)) + "% 100%";
+	tableRow.style.backgroundAttachment = "fixed";
+tableRow.style.backgroundRepeat = "no-repeat";
+}
+
+function graphRendering(table) {
+	$("tr:eq(0) > td.graphCell", table).each(function(){
+		var max = 0;
+		$("tr > td:nth-child("+($("tr:eq(0) td", table).index($(this))+1)+")", table).each(function(){
+			max = (max < parseInt($(this).text().replace(/[^\d]/g,""))) ? parseInt($(this).text().replace(/[^\d]/g,"")) : max;
+		});
+		$("tr > td:nth-child("+($("tr:eq(0) td", table).index($(this))+1)+")", table).each(function(){
+			p = (max == 0) ? "0%" : (parseInt($(this).text().replace(/[^\d]/g,"")) / max *100) + "%";
+			$(this).css("background-size", p+" 100%, 100% 100%");
+		});
+	});
+}
+
+
+//
+// Displaying:
+//
+
+// onOverlayDataUpdate event
+document.addEventListener("onOverlayDataUpdate", function (e) {
+	update(e.detail);
+});
+
+// update calls
+function update(data) {
+	//log(data);
+	
+	updateEncounter(data);
+	if (document.getElementById("combatantTableHeader") == null) {
+		updateCombatantListHeader();
+	}
+	updateCombatantList(data);
+	//max = data.Combatant[0]["ENCDPS"];
+	var tmp = getMax(data);
+	if(tmp > max) {
+		max = tmp;
+	}
+
+	
+	//log(JSON.stringify(data.Combatant.YOU.encdps));
+	$(".perfLine").peity("line", {
+		fill: "rgba(255,255,255,0.3)",
+		stroke: "rgba(0,0,0,0.0)",
+		max: max
+	});
+}
+function getFirst(data) {
+	for(var x in data.Combatant) {
+		return x;
+	}
+}
+function getMax(data) {
+	var first = getFirst(data);
+	if(typeof first == 'undefined')
+		return 1;
+	return parseInt(data.Combatant[first].ENCDPS);
+}
+// Update display elements:
+function updateEncounter(data) {
+	//get encounter table
+	var encounterElem = document.getElementById('encounter');
+
+	// test encounter element type, expecting string
+	var elementText;
+	if (typeof encounterDefine === 'function') {
+		elementText = encounterDefine(data.Encounter);
+		if (typeof elementText !== 'string') {
+					console.log("updateEncounter: 'encounterDefine' is declared as function but does not return a value as string.");
+				return;
+				}
+	} else if (typeof encounterDefine === 'string') {
+		elementText = parseActFormat(encounterDefine, data.Encounter);
+	} else {
+		console.log("updateEncounter: Could not update the encounter element due to invalid type.");
+		return;
+	}
+
+	// update encounter
+	if (!useHTMLEncounterDefine) {
+		encounterElem.innerText = parseActFormat(encounterDefine, data.Encounter);
+	} else {
+		encounterElem.innerHTML = parseActFormat(encounterDefine, data.Encounter);
+	}
+}
+
+// updateheader
+function updateCombatantListHeader() {
+	var table = document.getElementById('combatantTable');
+	var tableHeader = document.createElement("thead");
+	tableHeader.id = "combatantTableHeader";
+	var headerRow = tableHeader.insertRow();
+
+	for (var i = 0; i < headerDefine.length; i++) {
+		var cell = document.createElement("th");
+		// add column header
+		if (typeof headerDefine[i].text !== 'undefined') {
+			cell.innerText = headerDefine[i].text;
+		} else if (typeof headerDefine[i].html !== 'undefined') {
+			cell.innerHTML = headerDefine[i].html;
+		}
+		// setup
+		cell.style.width = headerDefine[i].width;
+		cell.style.maxWidth = headerDefine[i].width;
+		// 横結合数設定
+		if (typeof headerDefine[i].span !== 'undefined') {
+			cell.colSpan = headerDefine[i].span;
+		}
+		// add align
+		if (typeof headerDefine[i].align !== 'undefined') {
+			cell.style["textAlign"] = headerDefine[i].align;
+		}
+		headerRow.appendChild(cell);
+	}
+
+	table.tHead = tableHeader;
+}
+
+// update combatants
+function updateCombatantList(data) {
+	// grab table
+	var table = document.getElementById('combatantTable');
+	var oldTableBody = table.tBodies.namedItem('combatantTableBody');
+	var newTableBody = document.createElement("tbody");
+	newTableBody.id = "combatantTableBody";
+
+	// tbody update
+	var combatantIndex = 0;
+	for (var combatantName in data.Combatant) {
+		var combatant = data.Combatant[combatantName];
+		 combatant.JobOrName = combatant.Job || combatantName;
+				var egiSearch = combatant.JobOrName.indexOf("-Egi (");
+				if (egiSearch != -1) {
+					combatant.JobOrName = combatant.JobOrName.substring(0, egiSearch);
+				}
+				else if (combatant.JobOrName.indexOf("Eos (") == 0) {
+					combatant.JobOrName = "Eos";
+				}
+				else if (combatant.JobOrName.indexOf("Selene (") == 0) {
+					combatant.JobOrName = "Selene";
+				}
+				else if (combatant.JobOrName.indexOf("Carbuncle (") != -1) {
+					// currently no carbuncle pics
+				}
+				else if (combatant.JobOrName.indexOf(" (") != -1) {
+					combatant.JobOrName = "choco";
+				}
+					
+					var tableRow = newTableBody.insertRow(newTableBody.rows.length);
+					for (var i = 0; i < bodyDefine.length; i++)
+		
+
+
+
+
+		{
+			var cell = tableRow.insertCell(i);
+			// add combatants
+			if (typeof bodyDefine[i].text !== 'undefined') {
+				var cellText;
+				if (typeof bodyDefine[i].text === 'function') {
+					cellText = bodyDefine[i].text(combatant, combatantIndex);
+				} else {
+					cellText = parseActFormat(bodyDefine[i].text, combatant);
+				}
+				cell.innerText = cellText;
+			} else if (typeof bodyDefine[i].html !== 'undefined') {
+				var cellHTML;
+				if (typeof bodyDefine[i].html === 'function') {
+					cellHTML = bodyDefine[i].html(combatant, combatantIndex);
+				} else {
+					cellHTML = parseActFormat(bodyDefine[i].html, combatant);
+				}
+				cell.innerHTML = cellHTML;
+			}
+			// style
+			cell.style.width = bodyDefine[i].width;
+			cell.style.maxWidth = bodyDefine[i].width;
+			// add align
+			if (typeof(bodyDefine[i].align) !== 'undefined') {
+				cell.style.textAlign = bodyDefine[i].align;
+			}
+			// add effects
+			if (typeof bodyDefine[i].effect === 'function') {
+				bodyDefine[i].effect(cell, combatant, combatantIndex);
+			}
+		}
+		combatantIndex++;
+	}
+
+	graphRendering(newTableBody);
+
+	// tbody replace
+	if (oldTableBody != void(0)) {
+		table.replaceChild(newTableBody, oldTableBody);
+	}
+	else {
+		table.appendChild(newTableBody);
+	}
+}
+// Parse act format
+function parseActFormat(str, dictionary){
+	var result = "";
+
+	var currentIndex = 0;
+	do {
+		var openBraceIndex = str.indexOf('{', currentIndex);
+		if (openBraceIndex < 0) {
+			result += str.slice(currentIndex);
+			break;
+		}
+		else {
+			result += str.slice(currentIndex, openBraceIndex);
+			var closeBraceIndex = str.indexOf('}', openBraceIndex);
+			if (closeBraceIndex < 0) {
+				// parse error!
+				console.log("parseActFormat: Parse error: missing close-brace for " + openBraceIndex.toString() + ".");
+				return "ERROR";
+			}
+			else {
+				var tag = str.slice(openBraceIndex + 1, closeBraceIndex);
+				if (typeof dictionary[tag] !== 'undefined') {
+					result += dictionary[tag];
+				} else {
+					console.log("parseActFormat: Unknown tag: " + tag);
+					result += "ERROR";
+				}
+				currentIndex = closeBraceIndex + 1;
+			}
+		}
+	} while (currentIndex < str.length);
+	return result;
+}
+function log(str, append){
+	append = append || false;
+	var debug = document.getElementById('debug');
+	if(append) {
+		debug.innerText += str;
+	} else {
+		debug.innerText = str;
+	}
+}
+
+function toggleGraphs() {
+	//$("#graphs").toggle();
+	$(".perfLine").peity("line");
+}
+
+
+</script>
+</head>
+<body>
+	<div id="encounter">
+		No data to show.
+		<!-- encounter header -->
+	</div>
+
+	<table id="combatantTable">
+		<!-- combat data -->
+	</table>
+	<div id="debug" style="background-color: rgba(0,0,0,0.5); width:100%; color:#fff; display:none;">
+		debug
+	</div>
+</body>
+</html>
