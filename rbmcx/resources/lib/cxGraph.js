@@ -214,7 +214,7 @@ function cxGraph(container, w, h) {
                                     b.attr("x", parseFloat(b.attr("x")) + dx);
                                 }
 
-                                console.log(dx);
+                                //console.log(dx);
                                 //a.attr("x", parseFloat(a.attr("x"))+dx*2);
                                 //b.attr("x", parseFloat(b.attr("x"))-dx);
                             }
