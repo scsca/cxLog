@@ -1,16 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B35E5C70-4498-47D5-9374-50A85E464ADB}</ProjectGuid>
+    <ProjectGuid>{404ACF68-8EEA-489B-8EAF-5CB5C72A1771}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>cxLog</RootNamespace>
+    <NoStandardLibraries>false</NoStandardLibraries>
     <AssemblyName>cxLog</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,6 +19,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,27 +28,95 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>cxLog</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Advanced Combat Tracker, Version=3.2.0.250, Culture=neutral, PublicKeyToken=a946b61e93d97868, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Thirdparty\ACT\Advanced Combat Tracker.exe</HintPath>
     </Reference>
+    <Reference Include="HtmlRenderer, Version=1.0.1.4, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\rbmcx\HtmlRenderer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\rbmcx\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="OverlayPlugin.Common, Version=0.3.3.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\rbmcx\OverlayPlugin.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="OverlayPlugin.Core, Version=0.3.3.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\rbmcx\OverlayPlugin.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Xilium.CefGlue, Version=3.2171.1949.0, Culture=neutral, PublicKeyToken=6235298024de30d5" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Xilium.CefGlue, Version=3.2171.1949.0, Culture=neutral, PublicKeyToken=6235298024de30d5, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\rbmcx\Xilium.CefGlue.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".gitignore" />
+    <Content Include="Newtonsoft.Json.dll" />
+    <Content Include="rbmcx\addons\cxLog.dll" />
+    <Content Include="rbmcx\addons\cxLog.pdb" />
+    <Content Include="rbmcx\resources\handle.png" />
+    <Content Include="rbmcx\resources\images\glow\acn.png" />
+    <Content Include="rbmcx\resources\images\glow\arc.png" />
+    <Content Include="rbmcx\resources\images\glow\ast.png" />
+    <Content Include="rbmcx\resources\images\glow\blm.png" />
+    <Content Include="rbmcx\resources\images\glow\brd.png" />
+    <Content Include="rbmcx\resources\images\glow\choco.png" />
+    <Content Include="rbmcx\resources\images\glow\cnj.png" />
+    <Content Include="rbmcx\resources\images\glow\drg.png" />
+    <Content Include="rbmcx\resources\images\glow\drk.png" />
+    <Content Include="rbmcx\resources\images\glow\Eos.png" />
+    <Content Include="rbmcx\resources\images\glow\error.png" />
+    <Content Include="rbmcx\resources\images\glow\Garuda.png" />
+    <Content Include="rbmcx\resources\images\glow\gld.png" />
+    <Content Include="rbmcx\resources\images\glow\Ifrit.png" />
+    <Content Include="rbmcx\resources\images\glow\Limit Break.png" />
+    <Content Include="rbmcx\resources\images\glow\lnc.png" />
+    <Content Include="rbmcx\resources\images\glow\mch.png" />
+    <Content Include="rbmcx\resources\images\glow\mnk.png" />
+    <Content Include="rbmcx\resources\images\glow\mrd.png" />
+    <Content Include="rbmcx\resources\images\glow\nin.png" />
+    <Content Include="rbmcx\resources\images\glow\pgl.png" />
+    <Content Include="rbmcx\resources\images\glow\pld.png" />
+    <Content Include="rbmcx\resources\images\glow\pug.png" />
+    <Content Include="rbmcx\resources\images\glow\rog.png" />
+    <Content Include="rbmcx\resources\images\glow\sch.png" />
+    <Content Include="rbmcx\resources\images\glow\Selene.png" />
+    <Content Include="rbmcx\resources\images\glow\smn.png" />
+    <Content Include="rbmcx\resources\images\glow\thm.png" />
+    <Content Include="rbmcx\resources\images\glow\Titan.png" />
+    <Content Include="rbmcx\resources\images\glow\war.png" />
+    <Content Include="rbmcx\resources\images\glow\whm.png" />
+    <Content Include="rbmcx\resources\images\handle.png" />
+    <Content Include="rbmcx\resources\label.html" />
+    <Content Include="rbmcx\resources\lib\cxGraph.js" />
+    <Content Include="rbmcx\resources\lib\d3.min.js" />
+    <Content Include="rbmcx\resources\lib\jquery-2.1.1.min.js" />
+    <Content Include="rbmcx\resources\lib\peity.min.js" />
+    <Content Include="rbmcx\resources\lib\rbmcx_log.js" />
+    <Content Include="rbmcx\resources\rbmcx.css" />
+    <Content Include="rbmcx\resources\rbmcx_log.html" />
+    <Content Include="rbmcx\resources\rbmcx_mini.html" />
+    <Content Include="rbmcx\resources\spelltimer.html" />
+    <Content Include="rbmcx\resources\targetinfo.html" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="cxLog.cs" />
@@ -63,35 +131,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HtmlRenderer\HtmlRenderer.csproj">
-      <Project>{e2bc6483-b966-4a4a-b4cc-d50a4bd73af3}</Project>
-      <Name>HtmlRenderer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OverlayPlugin.Common\OverlayPlugin.Common.csproj">
-      <Project>{423fcbfc-dd3b-415f-be29-7a4a46614b79}</Project>
-      <Name>OverlayPlugin.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OverlayPlugin.Core\OverlayPlugin.Core.csproj">
-      <Project>{dd6d2a9a-4ad4-47b8-a1d0-c8608ea37092}</Project>
-      <Name>OverlayPlugin.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="cxLogOverlayConfigPanel.resx">
       <DependentUpon>cxLogOverlayConfigPanel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Newtonsoft.Json.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <None Include="rbmcx\resources\lib\LICENSE" />
+    <None Include="README.md" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <Folder Include=".git\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
+  <ProjectExtensions>
+    <VisualStudio AllowExistingFolder="true" />
+  </ProjectExtensions>
 </Project>
