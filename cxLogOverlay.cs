@@ -115,6 +115,8 @@ namespace cxLog
 
             private void parseUnsorted()
             {
+                Entity dupCheck = null;
+                String dupTime = null;
                 foreach (String line in this.unsorted)
                 {
                     if (LOG_REGEX.IsMatch(line))
@@ -148,15 +150,26 @@ namespace cxLog
                             detail.damage = 0;
                         }
 
+                        Entity etmp = null;
                         if (!this.entities.Exists(e => e.ID == source)) {
-                            Entity etmp = new Entity(source, name);
-                            this.entities.Add(etmp);
+                            etmp = new Entity(source, name);
                         }
                         if (!this.entities.Exists(e => e.ID == detail.target))
                         {                          
-                            Entity etmp = new Entity(detail.target, tname);
+                            etmp = new Entity(detail.target, tname);
+                            
+                        }
+                        if (etmp != null) {
+                            if(dupCheck != null && dupTime == detail.time && dupCheck.Name == etmp.Name)
+                            {
+                                this.entities.Remove(dupCheck);
+                            }
+                            dupCheck = etmp;
+                            dupTime = detail.time;
                             this.entities.Add(etmp);
                         }
+                            
+
                         this.entities.Find(e => e.ID == source).ActionBuffer.Add(detail);
 
 
