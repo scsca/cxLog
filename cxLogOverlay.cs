@@ -159,16 +159,17 @@ namespace cxLog
                             etmp = new Entity(detail.target, tname);
                             this.entities.Add(etmp);
                         }
-
-                        if(dupCheck != null && dupTime != null)
+                        if(etmp != null)
                         {
-                            if(dupTime == detail.time && dupCheck.Name == etmp.Name)
-                                this.entities.Remove(dupCheck);
+                            if (dupCheck != null && dupTime != null)
+                            {
+                                if (dupTime == detail.time && dupCheck.Name == etmp.Name)
+                                    this.entities.Remove(dupCheck);
+                            }
+                            dupCheck = etmp;
+                            dupTime = detail.time;
                         }
-                        dupCheck = etmp;
-                        dupTime = detail.time;
-
-                                             
+                                                
                         this.entities.Find(e => e.ID == source).ActionBuffer.Add(detail);
                     }
                 }
@@ -237,7 +238,7 @@ namespace cxLog
         private string CreateEventDispatcherScript(string message = "no data")
         {
             String cxLog = "var cxLog = '" + CreateJsonSafeString(message) + "';\n" + "document.dispatchEvent(new CustomEvent('onOverlayDataUpdate', { detail: cxLog }));";
-            dblog(cxLog);
+            //dblog(cxLog);
             return cxLog;
         }
 
