@@ -149,30 +149,27 @@ namespace cxLog
                             detail.name = data[1];
                             detail.damage = 0;
                         }
-
                         Entity etmp = null;
                         if (!this.entities.Exists(e => e.ID == source)) {
                             etmp = new Entity(source, name);
+                            this.entities.Add(etmp);
                         }
                         if (!this.entities.Exists(e => e.ID == detail.target))
                         {                          
                             etmp = new Entity(detail.target, tname);
-                            
-                        }
-                        if (etmp != null) {
-                            if(dupCheck != null && dupTime == detail.time && dupCheck.Name == etmp.Name)
-                            {
-                                this.entities.Remove(dupCheck);
-                            }
-                            dupCheck = etmp;
-                            dupTime = detail.time;
                             this.entities.Add(etmp);
                         }
-                            
 
+                        if(dupCheck != null && dupTime != null)
+                        {
+                            if(dupTime == detail.time && dupCheck.Name == etmp.Name)
+                                this.entities.Remove(dupCheck);
+                        }
+                        dupCheck = etmp;
+                        dupTime = detail.time;
+
+                                             
                         this.entities.Find(e => e.ID == source).ActionBuffer.Add(detail);
-
-
                     }
                 }
                 this.entities.ForEach(e =>
@@ -239,7 +236,9 @@ namespace cxLog
 
         private string CreateEventDispatcherScript(string message = "no data")
         {
-            return "var cxLog = '"+ CreateJsonSafeString(message) + "';\n" +  "document.dispatchEvent(new CustomEvent('onOverlayDataUpdate', { detail: cxLog }));";
+            String cxLog = "var cxLog = '" + CreateJsonSafeString(message) + "';\n" + "document.dispatchEvent(new CustomEvent('onOverlayDataUpdate', { detail: cxLog }));";
+            dblog(cxLog);
+            return cxLog;
         }
 
         private static bool actReady()

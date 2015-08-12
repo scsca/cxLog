@@ -1,5 +1,5 @@
 function cxNode(e, g) {
-    if (e == null)
+    if (e === null)
         return false;
     this.id = e.ID;
     this.name = e.Name;
@@ -72,7 +72,7 @@ function cxEdge(s, a, g) {
         .style("opacity", 0)
         .duration(300)
         .remove();
-        this.label.transition().delay(1500).remove();
+        this.label.transition().delay(1400).remove();
     };
 
     this.draw();
