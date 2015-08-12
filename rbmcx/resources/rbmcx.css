@@ -144,3 +144,11 @@ td:last-child {
 	border: 1px solid;
 	text-align: left;
 }
+
+.node {
+	font-size: 11px;
+}
+
+.edge {
+	font-size: 10px;
+}

@@ -21,13 +21,13 @@ function cxNode(e, g) {
             .attr("r", 20)
             .attr("fill", this.color);
         this.label = this.graph.glabel.append("text")
-            .attr("class", "label")
+            .attr("class", "label node")
             .attr("text-anchor", "middle")
             .attr("dy", 5)
             .attr("fill", 'white')
             .attr("font-family", "Meiryo")
             .attr("type", "node")
-            .text(this.name + "(" + this.id + ")");
+            .text(this.name);
     };
     this.draw();
 }
@@ -56,10 +56,10 @@ function cxEdge(s, a, g) {
             .attr("stroke-width", 5);
 
         this.label = this.graph.glabel.append("text")
-            .attr("class", "label")
+            .attr("class", "label edge")
             .attr("text-anchor", "middle")
-            .attr("x", (parseFloat(this.edge.attr("x1")) + parseFloat(this.edge.attr("x2"))) / 2)
-            .attr("y", (parseFloat(this.edge.attr("y1")) + parseFloat(this.edge.attr("y2"))) / 2)
+            .attr("x", (parseFloat(this.edge.attr("x1")) * 2 + parseFloat(this.edge.attr("x2"))) / 3.5)
+            .attr("y", (parseFloat(this.edge.attr("y1")) * 5 + parseFloat(this.edge.attr("y2"))) / 5)
             .attr("fill", 'white')
             .attr("font-family", "Meiryo")
             .attr("type", "edge")
@@ -72,11 +72,11 @@ function cxEdge(s, a, g) {
         .style("opacity", 0)
         .duration(300)
         .remove();
-        this.label.transition().delay(1400).remove();
+        this.label.transition().delay(1300).remove();
     };
 
     this.draw();
-    this.timeout();
+    this.timeout();    
 }
 
 function cxGraph(container, w, h) {
@@ -204,7 +204,7 @@ function cxGraph(container, w, h) {
                             } else {
                                 var ar = that.getBoundingClientRect();
                                 var br = this.getBoundingClientRect();
-                                dx = Math.min(Math.abs(ar.left - br.right), Math.abs(ar.right - br.left));
+                                dx = Math.min(Math.abs(ar.left - br.right), Math.abs(ar.right - br.left)) / 1.5;
 
                                 if (ar.left > br.left) {
                                     a.attr("x", parseFloat(a.attr("x")) + dx);
