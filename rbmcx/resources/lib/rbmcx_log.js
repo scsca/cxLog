@@ -35,7 +35,7 @@ function createEdges(e) {
     for (var i in e.ActionBuffer) {
         var a = e.ActionBuffer[i];
         if (a.target == e.ID || a.log == "1A") {
-
+            cx.drawLabel(e.ID, a);
         } else {
             cx.drawEdge(e.ID, a);
         }

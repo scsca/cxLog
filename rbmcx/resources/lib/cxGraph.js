@@ -63,7 +63,7 @@ function cxEdge(s, a, g) {
             .attr("fill", 'white')
             .attr("font-family", "Meiryo")
             .attr("type", "edge")
-            .text(this.name);
+            .text(this.name + "|" + this.damage);
     };
 
     this.timeout = function () {
@@ -72,11 +72,11 @@ function cxEdge(s, a, g) {
         .style("opacity", 0)
         .duration(300)
         .remove();
-        this.label.transition().delay(1300).remove();
+        this.label.transition().delay(1500).remove();
     };
 
     this.draw();
-    this.timeout();    
+    this.timeout();
 }
 
 function cxGraph(container, w, h) {
@@ -115,7 +115,7 @@ function cxGraph(container, w, h) {
             f.type = n.Type;
             f.name = n.Name;
             f.encdps = n.DPS;
-            f.color =
+            //f.color = 
             f.updated = new Date();
             return;
         }
@@ -154,6 +154,27 @@ function cxGraph(container, w, h) {
 
         tmp = { "x": rad * Math.cos(angle * Math.PI / 180), "y": rad * -Math.sin(angle * Math.PI / 180) };
         return tmp;
+    };
+
+    this.drawLabel = function (e, a) {
+        if ((f = this.hasNode(a.target)) !== null) {
+            this.glabel.append("text")
+                .attr("type", "node")
+                .attr("class", "label small")
+            	.attr("text-anchor", "middle")
+                .attr("x", f.node.attr("cx"))
+                .attr("y", f.node.attr("cy"))
+                .attr("dx", 15)
+                .attr("dy", 15)
+                .attr("fill", 'white')
+                .attr("font-family", "Meiryo")
+                .text("+" + a.name)
+            	.transition()
+                .style("opacity", 0)
+                .duration(1000)
+                .remove();
+            console.log(f.node[0]);
+        }
     };
 
     //find node

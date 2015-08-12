@@ -152,3 +152,7 @@ td:last-child {
 .edge {
 	font-size: 10px;
 }
+
+.small {
+	font-size: 8px;
+}
