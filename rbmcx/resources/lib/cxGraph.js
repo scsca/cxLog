@@ -10,16 +10,19 @@ function cxNode(e, g) {
     //parent cxGraph
     this.graph = g;
 
-    this.color = (this.type === 0) ? 'blue' : 'red';
+    this.color = function () {
+        return (this.type === 0) ? 'rgba(0,0,255,0.4)' : 'red';
+    };
     //draw node
     this.draw = function () {
         this.group = this.graph.gnode.append("g");
         this.group.attr("type", "node");
         this.node = this.group.append("circle")
+        	.attr("class", (this.type == 0) ? "ally" : "enemy")
             .attr("cx", 0)
             .attr("cy", 0)
-            .attr("r", 20)
-            .attr("fill", this.color);
+            .attr("r", 17);
+        //.attr("fill", this.color());
         this.label = this.graph.glabel.append("text")
             .attr("class", "label node")
             .attr("text-anchor", "middle")
@@ -48,18 +51,17 @@ function cxEdge(s, a, g) {
         this.group = this.graph.gedge.append("g");
         this.group.attr("type", "edge");
         this.edge = this.group.append("line")
+        	.attr("class", this.source.type == 0 ? "ally" : "enemy")
             .attr("x1", this.source.node.attr("cx"))
             .attr("y1", this.source.node.attr("cy"))
             .attr("x2", this.target.node.attr("cx"))
-            .attr("y2", this.target.node.attr("cy"))
-            .attr("stroke", this.color)
-            .attr("stroke-width", 5);
+            .attr("y2", this.target.node.attr("cy"));
 
         this.label = this.graph.glabel.append("text")
             .attr("class", "label edge")
             .attr("text-anchor", "middle")
-            .attr("x", (parseFloat(this.edge.attr("x1")) * 2 + parseFloat(this.edge.attr("x2"))) / 3.5)
-            .attr("y", (parseFloat(this.edge.attr("y1")) * 5 + parseFloat(this.edge.attr("y2"))) / 5)
+            .attr("x", (parseFloat(this.edge.attr("x1")) + parseFloat(this.edge.attr("x2") * 0.2)))
+            .attr("y", (parseFloat(this.edge.attr("y1")) + parseFloat(this.edge.attr("y2") * 0.2)))
             .attr("fill", 'white')
             .attr("font-family", "Meiryo")
             .attr("type", "edge")
@@ -68,11 +70,11 @@ function cxEdge(s, a, g) {
 
     this.timeout = function () {
         this.group.transition()
-        .delay(1200)
+        .delay(800)
         .style("opacity", 0)
-        .duration(300)
+        .duration(500)
         .remove();
-        this.label.transition().delay(1500).remove();
+        this.label.transition().delay(800).style("opacity", 0).duration(500).remove();
     };
 
     this.draw();
@@ -115,7 +117,7 @@ function cxGraph(container, w, h) {
             f.type = n.Type;
             f.name = n.Name;
             f.encdps = n.DPS;
-            //f.color = 
+            f.node.attr("fill", f.color());
             f.updated = new Date();
             return;
         }
@@ -159,8 +161,8 @@ function cxGraph(container, w, h) {
     this.drawLabel = function (e, a) {
         if ((f = this.hasNode(a.target)) !== null) {
             this.glabel.append("text")
-                .attr("type", "node")
-                .attr("class", "label small")
+                .attr("type", "fixed")
+                .attr("class", "small")
             	.attr("text-anchor", "middle")
                 .attr("x", f.node.attr("cx"))
                 .attr("y", f.node.attr("cy"))
@@ -171,9 +173,8 @@ function cxGraph(container, w, h) {
                 .text("+" + a.name)
             	.transition()
                 .style("opacity", 0)
-                .duration(1000)
+                .duration(1200)
                 .remove();
-            console.log(f.node[0]);
         }
     };
 
@@ -212,11 +213,13 @@ function cxGraph(container, w, h) {
         var svg = this.svg;
         while (this.collisions("text", "node")) {
             svg.selectAll("text").each(function (d, i) {
-                if (d3.select(this).attr("type") == "node")
+                if (d3.select(this).attr("type") == "node" || d3.select(this).attr("type") == "fixed")
                     return;
                 var that = this;
                 svg.selectAll("text").each(function (d, i) {
                     if (this != that) {
+                        if (d3.select(this).attr("type") == "node" || d3.select(this).attr("type") == "fixed")
+                            return;
                         if (collide(this, that)) {
                             var a = d3.select(that);
                             var b = d3.select(this);
@@ -250,11 +253,13 @@ function cxGraph(container, w, h) {
         var svg = this.svg;
         c = false;
         svg.selectAll(t).each(function (d, i) {
-            if (d3.select(this).attr("type") == ex)
+            if (d3.select(this).attr("type") == ex || d3.select(this).attr("type") == "fixed")
                 return;
             var that = this;
             svg.selectAll(t).each(function (d, i) {
                 if (this != that) {
+                    if (d3.select(this).attr("type") == ex || d3.select(this).attr("type") == "fixed")
+                        return;
                     a = d3.select(that);
                     b = d3.select(this);
                     if (a.attr("x") == b.attr("x") && a.attr("y") == b.attr("y"))

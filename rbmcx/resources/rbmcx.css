@@ -146,13 +146,40 @@ td:last-child {
 }
 
 .node {
-	font-size: 11px;
-}
-
-.edge {
 	font-size: 10px;
 }
 
-.small {
-	font-size: 8px;
+.edge {
+	font-size: 9px;
+}
+
+text.small {
+    font-size: 8px;
+}
+
+circle {
+    stroke-width: 3;
+}
+
+circle.ally {
+    fill: rgba(0,0,255, 0.7);
+    stroke: rgba(100,100,255,0.3);
+}
+
+circle.enemy {
+   fill: rgba(255, 0, 0, 0.7);
+   stroke: rgba(255,100,100,0.3);
+}
+
+line {
+    stroke-width: 3px;
+    stroke-linecap: butt;
+}
+
+line.ally {
+    stroke: rgba(0,0,255,0.3);
+}
+
+line.enemy {
+    stroke: rgba(255,0,0,0.3);
 }

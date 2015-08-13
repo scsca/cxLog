@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace cxLog
 {
@@ -229,7 +230,7 @@ namespace cxLog
 
         private void dblog(dynamic message)
         {
-            FileStream fs = new FileStream(@"c:\debug.txt", FileMode.Append);
+            FileStream fs = new FileStream(Path.GetDirectoryName(Application.ExecutablePath) + @"\cxLog_debug.txt", FileMode.Append);
             StreamWriter f = new StreamWriter(fs);
             f.WriteLine(message);
             f.Close();
@@ -238,7 +239,7 @@ namespace cxLog
         private string CreateEventDispatcherScript(string message = "no data")
         {
             String cxLog = "var cxLog = '" + CreateJsonSafeString(message) + "';\n" + "document.dispatchEvent(new CustomEvent('onOverlayDataUpdate', { detail: cxLog }));";
-            //dblog(cxLog);
+            dblog(cxLog);
             return cxLog;
         }
 
