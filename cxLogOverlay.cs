@@ -238,7 +238,7 @@ namespace cxLog
         private string CreateEventDispatcherScript(string message = "no data")
         {
             String cxLog = "var cxLog = '" + CreateJsonSafeString(message) + "';\n" + "document.dispatchEvent(new CustomEvent('onOverlayDataUpdate', { detail: cxLog }));";
-            dblog(cxLog);
+            //dblog(cxLog);
             return cxLog;
         }
 
