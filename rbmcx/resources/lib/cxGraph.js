@@ -76,7 +76,7 @@ function cxEdge(s, a, g) {
     };
 
     this.draw();
-    this.timeout();
+    this.timeout();    
 }
 
 function cxGraph(container, w, h) {
@@ -225,7 +225,7 @@ function cxGraph(container, w, h) {
                             } else {
                                 var ar = that.getBoundingClientRect();
                                 var br = this.getBoundingClientRect();
-                                dx = Math.min(Math.abs(ar.left - br.right), Math.abs(ar.right - br.left)) / 1.5;
+                                dx = Math.min(Math.abs(ar.left - br.right), Math.abs(ar.right - br.left)) / 2;
 
                                 if (ar.left > br.left) {
                                     a.attr("x", parseFloat(a.attr("x")) + dx);
@@ -255,7 +255,9 @@ function cxGraph(container, w, h) {
             var that = this;
             svg.selectAll(t).each(function (d, i) {
                 if (this != that) {
-                    if (collide(this, that))
+                    a = d3.select(that);
+                    b = d3.select(this);
+                    if (a.attr("x") == b.attr("x") && a.attr("y") == b.attr("y"))
                         c = true;
                 }
             });
